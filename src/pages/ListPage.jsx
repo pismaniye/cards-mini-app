@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import Button from '../components/Button';
 import List from '../components/List';
+import RepeatSettingsModal from '../components/RepeatSettingsModal';
 import '../styles/pages/ListPage.css';
 
 const ListPage = () => {
   const navigate = useNavigate();
   const { currentList, setCurrentWord, lists, setLists, saveData } = useAppContext();
+  const [showRepeatSettings, setShowRepeatSettings] = useState(false);
 
   const handleAddWord = () => {
     navigate('/word/new');
@@ -22,8 +24,13 @@ const ListPage = () => {
     if (currentList.words.length === 0) {
       alert('Add some words to the list before starting repeat mode.');
     } else {
-      navigate('/repeat');
+      setShowRepeatSettings(true);
     }
+  };
+
+  const handleRepeatSettingsStart = (settings) => {
+    setShowRepeatSettings(false);
+    navigate('/repeat', { state: { settings } });
   };
 
   const handleDeleteWord = async (word) => {
@@ -54,12 +61,17 @@ const ListPage = () => {
     </div>
   );
 
+  const handleBackToMain = () => {
+    navigate('/');
+  };
+
   if (!currentList) {
     return <div>No list selected</div>;
   }
 
   return (
     <div className="list-page">
+      <Button onClick={handleBackToMain} className="back-button">Back to Main</Button>
       <h1>{currentList.name}</h1>
       <Button onClick={handleStartRepeat} className="repeat-button">
         Start Repeat
@@ -72,6 +84,12 @@ const ListPage = () => {
       <Button onClick={handleAddWord} className="add-button">
         Add Word
       </Button>
+      {showRepeatSettings && (
+        <RepeatSettingsModal
+          onStart={handleRepeatSettingsStart}
+          onClose={() => setShowRepeatSettings(false)}
+        />
+      )}
     </div>
   );
 };

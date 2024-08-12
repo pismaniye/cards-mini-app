@@ -7,18 +7,21 @@ import '../styles/pages/WordPage.css';
 const WordPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { currentList, currentWord, setCurrentWord, lists, setLists, saveData } = useAppContext();
+  const { currentList, setCurrentList, lists, setLists, saveData } = useAppContext();
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
   const [example, setExample] = useState('');
 
   useEffect(() => {
-    if (id !== 'new' && currentWord) {
-      setFront(currentWord.front);
-      setBack(currentWord.back);
-      setExample(currentWord.example || '');
+    if (id !== 'new' && currentList) {
+      const word = currentList.words.find(w => w.id === id);
+      if (word) {
+        setFront(word.front);
+        setBack(word.back);
+        setExample(word.example || '');
+      }
     }
-  }, [id, currentWord]);
+  }, [id, currentList]);
 
   const handleSave = async () => {
     if (!front.trim() || !back.trim()) {
@@ -26,7 +29,7 @@ const WordPage = () => {
       return;
     }
 
-    const newWord = { id: id === 'new' ? Date.now().toString() : currentWord.id, front, back, example };
+    const newWord = { id: id === 'new' ? Date.now().toString() : id, front, back, example };
     let updatedList;
     if (id === 'new') {
       updatedList = {
@@ -36,7 +39,7 @@ const WordPage = () => {
     } else {
       updatedList = {
         ...currentList,
-        words: currentList.words.map(w => w.id === currentWord.id ? newWord : w)
+        words: currentList.words.map(w => w.id === id ? newWord : w)
       };
     }
 
@@ -45,7 +48,7 @@ const WordPage = () => {
     );
 
     setLists(updatedLists);
-    setCurrentWord(null);
+    setCurrentList(updatedList);
 
     try {
       await saveData();

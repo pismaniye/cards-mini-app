@@ -4,10 +4,10 @@ import useFirebase from '../hooks/useFirebase';
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-  const [lists, setLists] = useState([]);
-  const [currentList, setCurrentList] = useState(null);
-  const [currentWord, setCurrentWord] = useState(null);
-  const firebase = useFirebase();
+    const [lists, setLists] = useState([]);
+    const [currentList, setCurrentList] = useState(null);
+    const [currentWord, setCurrentWord] = useState(null);
+    const firebase = useFirebase();
 
   useEffect(() => {
     if (!firebase.loading && firebase.user) {

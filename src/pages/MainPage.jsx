@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import Button from '../components/Button';
@@ -7,16 +7,9 @@ import '../styles/pages/MainPage.css';
 
 const MainPage = () => {
   const navigate = useNavigate();
-  const { lists, setLists, setCurrentList, saveData, loadData } = useAppContext();
+  const { lists, setLists, setCurrentList, saveData } = useAppContext();
   const [isAdding, setIsAdding] = useState(false);
   const [newListName, setNewListName] = useState('');
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await loadData();
-    };
-    fetchData();
-  }, [loadData]);
 
   const handleAddList = () => {
     setIsAdding(true);
@@ -61,6 +54,11 @@ const MainPage = () => {
     }
   };
 
+  const handleRepeatAll = () => {
+    // Implement repeat all functionality
+    navigate('/repeat-all');
+  };
+
   const renderListItem = (list) => (
     <div className="list-item">
       <span>{list.name}</span>
@@ -72,6 +70,7 @@ const MainPage = () => {
   return (
     <div className="main-page">
       <h1>Lists</h1>
+      <Button onClick={handleRepeatAll} className="repeat-all-button">Repeat All</Button>
       {isAdding ? (
         <div className="add-list-form">
           <input
