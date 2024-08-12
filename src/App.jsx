@@ -1,12 +1,27 @@
-import React from 'react'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AppProvider } from './context/AppContext';
+import MainPage from './pages/MainPage';
+import ListPage from './pages/ListPage';
+import WordPage from './pages/WordPage';
+import RepeatPage from './pages/RepeatPage';
+import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <h1>Cards Mini App</h1>
-    </div>
-  )
+    <AppProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<MainPage />} />
+            <Route path="/list/:id" element={<ListPage />} />
+            <Route path="/word/:id" element={<WordPage />} />
+            <Route path="/repeat" element={<RepeatPage />} />
+          </Routes>
+        </div>
+      </Router>
+    </AppProvider>
+  );
 }
 
-export default App
+export default App;
