@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import Button from '../components/Button';
@@ -56,8 +56,13 @@ const MainPage = () => {
     }
   };
 
+  const getAllWords = useCallback(() => {
+    return lists.flatMap(list => list.words);
+  }, [lists]);
+
   const handleRepeatAll = () => {
-    if (lists.some(list => list.words && list.words.length > 0)) {
+    const allWords = getAllWords();
+    if (allWords.length > 0) {
       setShowRepeatSettings(true);
     } else {
       alert('No words to repeat. Please add some words to your lists first.');
@@ -66,8 +71,12 @@ const MainPage = () => {
 
   const handleRepeatSettingsStart = (settings) => {
     setShowRepeatSettings(false);
-    const allWords = lists.flatMap(list => list.words);
-    navigate('/repeat', { state: { settings, words: allWords } });
+    const allWords = getAllWords();
+    if (allWords.length > 0) {
+      navigate('/repeat', { state: { settings, words: allWords } });
+    } else {
+      alert('No words to repeat. Please add some words to your lists first.');
+    }
   };
 
   const renderListItem = (list) => (
@@ -94,9 +103,9 @@ const MainPage = () => {
           <Button onClick={() => setIsAdding(false)}>Cancel</Button>
         </div>
       ) : (
-        <Button onClick={handleAddList} className="add-button">+</Button>
+        <Button onClick={handleAddList} className="fab">+</Button>
       )}
-      <List 
+      <List
         items={lists}
         renderItem={renderListItem}
         onItemClick={handleListClick}

@@ -1,18 +1,38 @@
 .button {
-    padding: 10px 20px;
+    background-color: transparent;
     border: none;
-    border-radius: 5px;
-    background-color: #0088cc;
-    color: white;
+    color: #0088cc;
+    padding: 10px 15px;
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s;
+    user-select: none;
   }
   
   .button:hover {
-    background-color: #006699;
+    background-color: rgba(0, 136, 204, 0.1);
   }
   
   .button:active {
-    background-color: #004466;
+    background-color: rgba(0, 136, 204, 0.2);
+  }
+  
+  .fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #0088cc;
+    color: white;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .fab:hover {
+    background-color: #006699;
   }

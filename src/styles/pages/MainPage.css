@@ -2,7 +2,7 @@
     padding: 20px;
   }
   
-  .add-button {
+  .fab {
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -20,10 +20,10 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
   
-  .add-button:hover {
+  .fab:hover {
     background-color: #006699;
   }
-  
+
   .list-item {
     display: flex;
     justify-content: space-between;
@@ -33,7 +33,7 @@
   }
   
   .delete-button {
-    background-color: #ff4444;
+    background-color: #0088cc;
     color: white;
     border: none;
     padding: 5px 10px;
@@ -42,12 +42,12 @@
   }
   
   .delete-button:hover {
-    background-color: #cc0000;
+    background-color: #0088cc;
   }
   
   .repeat-all-button {
     margin-bottom: 20px;
-    background-color: #4CAF50;
+    background-color: #0088cc;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -56,5 +56,5 @@
   }
   
   .repeat-all-button:hover {
-    background-color: #45a049;
+    background-color: #0088cc;
   }

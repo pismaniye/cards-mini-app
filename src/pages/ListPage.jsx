@@ -30,7 +30,7 @@ const ListPage = () => {
 
   const handleRepeatSettingsStart = (settings) => {
     setShowRepeatSettings(false);
-    navigate('/repeat', { state: { settings } });
+    navigate('/repeat', { state: { settings, words: currentList.words } });
   };
 
   const handleDeleteWord = async (word) => {
@@ -40,7 +40,7 @@ const ListPage = () => {
         ...currentList,
         words: currentList.words.filter(w => w.id !== word.id)
       };
-      const updatedLists = lists.map(list => 
+      const updatedLists = lists.map(list =>
         list.id === currentList.id ? updatedList : list
       );
       setLists(updatedLists);
@@ -76,13 +76,13 @@ const ListPage = () => {
       <Button onClick={handleStartRepeat} className="repeat-button">
         Start Repeat
       </Button>
-      <List 
+      <List
         items={currentList.words}
         renderItem={renderWordItem}
         onItemClick={handleWordClick}
       />
-      <Button onClick={handleAddWord} className="add-button">
-        Add Word
+      <Button onClick={handleAddWord} className="fab">
+        +
       </Button>
       {showRepeatSettings && (
         <RepeatSettingsModal

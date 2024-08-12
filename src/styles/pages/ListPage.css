@@ -12,7 +12,7 @@
     margin-bottom: 20px;
   }
   
-  .add-button {
+  .fab {
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -28,4 +28,8 @@
     border: none;
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .fab:hover {
+    background-color: #006699;
   }
