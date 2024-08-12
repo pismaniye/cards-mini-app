@@ -2,21 +2,59 @@
     padding: 20px;
   }
   
-  .list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
   .add-button {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    border-radius: 50%;
     width: 60px;
     height: 60px;
+    border-radius: 50%;
+    background-color: #0088cc;
+    color: white;
+    font-size: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .add-button:hover {
+    background-color: #006699;
+  }
+  
+  .list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .delete-button {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .delete-button:hover {
+    background-color: #cc0000;
+  }
+  
+  .repeat-all-button {
+    margin-bottom: 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .repeat-all-button:hover {
+    background-color: #45a049;
   }

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import Button from '../components/Button';
 import List from '../components/List';
+import RepeatSettingsModal from '../components/RepeatSettingsModal';
 import '../styles/pages/MainPage.css';
 
 const MainPage = () => {
@@ -10,6 +11,7 @@ const MainPage = () => {
   const { lists, setLists, setCurrentList, saveData } = useAppContext();
   const [isAdding, setIsAdding] = useState(false);
   const [newListName, setNewListName] = useState('');
+  const [showRepeatSettings, setShowRepeatSettings] = useState(false);
 
   const handleAddList = () => {
     setIsAdding(true);
@@ -55,8 +57,17 @@ const MainPage = () => {
   };
 
   const handleRepeatAll = () => {
-    // Implement repeat all functionality
-    navigate('/repeat-all');
+    if (lists.some(list => list.words && list.words.length > 0)) {
+      setShowRepeatSettings(true);
+    } else {
+      alert('No words to repeat. Please add some words to your lists first.');
+    }
+  };
+
+  const handleRepeatSettingsStart = (settings) => {
+    setShowRepeatSettings(false);
+    const allWords = lists.flatMap(list => list.words);
+    navigate('/repeat', { state: { settings, words: allWords } });
   };
 
   const renderListItem = (list) => (
@@ -83,15 +94,19 @@ const MainPage = () => {
           <Button onClick={() => setIsAdding(false)}>Cancel</Button>
         </div>
       ) : (
-        <Button onClick={handleAddList} className="add-button">
-          Add List
-        </Button>
+        <Button onClick={handleAddList} className="add-button">+</Button>
       )}
       <List 
         items={lists}
         renderItem={renderListItem}
         onItemClick={handleListClick}
       />
+      {showRepeatSettings && (
+        <RepeatSettingsModal
+          onStart={handleRepeatSettingsStart}
+          onClose={() => setShowRepeatSettings(false)}
+        />
+      )}
     </div>
   );
 };
