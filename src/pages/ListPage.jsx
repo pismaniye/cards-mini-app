@@ -7,7 +7,7 @@ import '../styles/pages/ListPage.css';
 
 const ListPage = () => {
   const navigate = useNavigate();
-  const { currentList, setCurrentWord, telegram } = useAppContext();
+  const { currentList, setCurrentWord, lists, setLists, saveData } = useAppContext();
 
   const handleAddWord = () => {
     navigate('/word/new');
@@ -20,17 +20,29 @@ const ListPage = () => {
 
   const handleStartRepeat = () => {
     if (currentList.words.length === 0) {
-      telegram.showAlert('Add some words to the list before starting repeat mode.');
+      alert('Add some words to the list before starting repeat mode.');
     } else {
       navigate('/repeat');
     }
   };
 
   const handleDeleteWord = async (word) => {
-    const confirmed = await telegram.showConfirm(`Are you sure you want to delete "${word.front}"?`);
+    const confirmed = window.confirm(`Are you sure you want to delete "${word.front}"?`);
     if (confirmed) {
-      currentList.words = currentList.words.filter(w => w.id !== word.id);
-      telegram.showAlert('Word deleted successfully!');
+      const updatedList = {
+        ...currentList,
+        words: currentList.words.filter(w => w.id !== word.id)
+      };
+      const updatedLists = lists.map(list => 
+        list.id === currentList.id ? updatedList : list
+      );
+      setLists(updatedLists);
+      try {
+        await saveData();
+        alert('Word deleted successfully!');
+      } catch (error) {
+        alert('Error deleting word: ' + error.message);
+      }
     }
   };
 

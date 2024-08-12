@@ -7,7 +7,7 @@ import '../styles/pages/WordPage.css';
 const WordPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { currentList, currentWord, setCurrentWord, telegram } = useAppContext();
+  const { currentList, currentWord, setCurrentWord, lists, setLists, saveData } = useAppContext();
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
   const [example, setExample] = useState('');
@@ -20,25 +20,40 @@ const WordPage = () => {
     }
   }, [id, currentWord]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!front.trim() || !back.trim()) {
-      telegram.showAlert('Both front and back sides are required.');
+      alert('Both front and back sides are required.');
       return;
     }
 
     const newWord = { id: id === 'new' ? Date.now().toString() : currentWord.id, front, back, example };
+    let updatedList;
     if (id === 'new') {
-      currentList.words.push(newWord);
-      telegram.showAlert('New word added successfully!');
+      updatedList = {
+        ...currentList,
+        words: [...currentList.words, newWord]
+      };
     } else {
-      const index = currentList.words.findIndex(w => w.id === currentWord.id);
-      if (index !== -1) {
-        currentList.words[index] = newWord;
-        telegram.showAlert('Word updated successfully!');
-      }
+      updatedList = {
+        ...currentList,
+        words: currentList.words.map(w => w.id === currentWord.id ? newWord : w)
+      };
     }
+
+    const updatedLists = lists.map(list => 
+      list.id === currentList.id ? updatedList : list
+    );
+
+    setLists(updatedLists);
     setCurrentWord(null);
-    navigate(-1);
+
+    try {
+      await saveData();
+      alert(id === 'new' ? 'New word added successfully!' : 'Word updated successfully!');
+      navigate(-1);
+    } catch (error) {
+      alert('Error saving word: ' + error.message);
+    }
   };
 
   return (

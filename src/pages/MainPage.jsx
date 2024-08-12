@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import Button from '../components/Button';
@@ -7,25 +7,38 @@ import '../styles/pages/MainPage.css';
 
 const MainPage = () => {
   const navigate = useNavigate();
-  const { lists, setLists, setCurrentList, telegram } = useAppContext();
+  const { lists, setLists, setCurrentList, saveData, loadData } = useAppContext();
   const [isAdding, setIsAdding] = useState(false);
   const [newListName, setNewListName] = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await loadData();
+    };
+    fetchData();
+  }, [loadData]);
 
   const handleAddList = () => {
     setIsAdding(true);
   };
 
-  const handleSaveNewList = () => {
+  const handleSaveNewList = async () => {
     if (newListName.trim()) {
       const newList = {
         id: Date.now().toString(),
         name: newListName.trim(),
         words: []
       };
-      setLists([...lists, newList]);
+      const updatedLists = [...lists, newList];
+      setLists(updatedLists);
       setNewListName('');
       setIsAdding(false);
-      telegram.showAlert('New list created successfully!');
+      try {
+        await saveData();
+        alert('New list created successfully!');
+      } catch (error) {
+        alert('Error saving new list: ' + error.message);
+      }
     }
   };
 
@@ -35,10 +48,16 @@ const MainPage = () => {
   };
 
   const handleDeleteList = async (list) => {
-    const confirmed = await telegram.showConfirm(`Are you sure you want to delete "${list.name}"?`);
+    const confirmed = window.confirm(`Are you sure you want to delete "${list.name}"?`);
     if (confirmed) {
-      setLists(lists.filter(l => l.id !== list.id));
-      telegram.showAlert('List deleted successfully!');
+      const updatedLists = lists.filter(l => l.id !== list.id);
+      setLists(updatedLists);
+      try {
+        await saveData();
+        alert('List deleted successfully!');
+      } catch (error) {
+        alert('Error deleting list: ' + error.message);
+      }
     }
   };
 

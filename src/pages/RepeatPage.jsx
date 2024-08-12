@@ -6,7 +6,7 @@ import '../styles/pages/RepeatPage.css';
 
 const RepeatPage = () => {
   const navigate = useNavigate();
-  const { currentList, telegram } = useAppContext();
+  const { currentList } = useAppContext();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [shuffledWords, setShuffledWords] = useState([]);
@@ -24,10 +24,10 @@ const RepeatPage = () => {
     if (currentList && currentList.words && currentList.words.length > 0) {
       setShuffledWords(shuffleArray(currentList.words));
     } else {
-      telegram.showAlert('No words in the list. Please add some words before starting repeat mode.');
+      alert('No words in the list. Please add some words before starting repeat mode.');
       navigate(-1);
     }
-  }, [currentList, shuffleArray, telegram, navigate]);
+  }, [currentList, shuffleArray, navigate]);
 
   const handleShowAnswer = () => {
     setShowAnswer(true);
@@ -35,11 +35,11 @@ const RepeatPage = () => {
 
   const handleNextWord = () => {
     if (currentIndex < shuffledWords.length - 1) {
-      setCurrentIndex((prevIndex) => prevIndex + 1);
+      setCurrentIndex(prevIndex => prevIndex + 1);
       setShowAnswer(false);
     } else {
       // End of repeat session
-      telegram.showAlert('Congratulations! You\'ve completed the repeat session.');
+      alert('Congratulations! You\'ve completed the repeat session.');
       navigate(-1);
     }
   };
