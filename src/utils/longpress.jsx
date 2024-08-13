@@ -1,20 +1,20 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
-export const useLongPress = (onLongPress, onClick, { shouldPreventDefault = true, delay = 300 } = {}) => {
+const useLongPress = (onLongPress, onClick, { shouldPreventDefault = true, delay = 300 } = {}) => {
+  const [longPressTriggered, setLongPressTriggered] = useState(false);
   const timeout = useRef();
   const target = useRef();
 
   const start = useCallback(
     (event) => {
-      if (shouldPreventDefault && event.target) {
-        event.target.addEventListener('touchend', preventDefault, {
-          passive: false
-        });
-        target.current = event.target;
+      if (shouldPreventDefault && event.target && event.cancelable) {
+        event.preventDefault();
       }
       timeout.current = setTimeout(() => {
         onLongPress(event);
+        setLongPressTriggered(true);
       }, delay);
+      target.current = event.target;
     },
     [onLongPress, delay, shouldPreventDefault]
   );
@@ -22,33 +22,22 @@ export const useLongPress = (onLongPress, onClick, { shouldPreventDefault = true
   const clear = useCallback(
     (event, shouldTriggerClick = true) => {
       timeout.current && clearTimeout(timeout.current);
-      shouldTriggerClick && event.target === target.current && onClick();
-      if (shouldPreventDefault && target.current) {
-        target.current.removeEventListener('touchend', preventDefault);
+      if (shouldTriggerClick && !longPressTriggered && onClick) {
+        onClick(event);
       }
+      setLongPressTriggered(false);
+      target.current = null;
     },
-    [shouldPreventDefault, onClick]
+    [onClick, longPressTriggered]
   );
 
   return {
-    onMouseDown: (e) => start(e),
-    onTouchStart: (e) => start(e),
-    onMouseUp: (e) => clear(e),
+    onMouseDown: start,
+    onTouchStart: start,
+    onMouseUp: clear,
     onMouseLeave: (e) => clear(e, false),
-    onTouchEnd: (e) => clear(e)
+    onTouchEnd: (e) => clear(e, false),
   };
-};
-
-const isTouchEvent = (event) => {
-  return 'touches' in event;
-};
-
-const preventDefault = (event) => {
-  if (!isTouchEvent(event)) return;
-
-  if (event.touches.length < 2 && event.preventDefault) {
-    event.preventDefault();
-  }
 };
 
 export default useLongPress;

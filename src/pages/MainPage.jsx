@@ -5,7 +5,6 @@ import Button from '../components/Button';
 import List from '../components/List';
 import RepeatSettingsModal from '../components/RepeatSettingsModal';
 import ContextMenu from '../components/ContextMenu';
-import useLongPress from '../utils/longpress';
 import '../styles/pages/MainPage.css';
 
 const MainPage = () => {
@@ -40,10 +39,10 @@ const MainPage = () => {
     }
   };
 
-  const handleListClick = (list) => {
+  const handleListClick = useCallback((list) => {
     setCurrentList(list);
     navigate(`/list/${list.id}`);
-  };
+  }, [navigate, setCurrentList]);
 
   const handleDeleteList = async (list) => {
     const confirmed = window.confirm(`Are you sure you want to delete "${list.name}"?`);
@@ -58,10 +57,6 @@ const MainPage = () => {
       }
     }
   };
-
-  const getAllWords = useCallback(() => {
-    return lists.flatMap(list => list.words);
-  }, [lists]);
 
   const handleRepeatAll = () => {
     const allWords = lists.flatMap(list => list.words);
@@ -83,11 +78,11 @@ const MainPage = () => {
   };
 
   const handleLongPress = useCallback((event, list) => {
-    setContextMenu({
-      x: event.clientX || event.touches[0].clientX,
-      y: event.clientY || event.touches[0].clientY,
-      list
-    });
+    const x = event.clientX || (event.touches && event.touches[0].clientX);
+    const y = event.clientY || (event.touches && event.touches[0].clientY);
+    if (x !== undefined && y !== undefined) {
+      setContextMenu({ x, y, list });
+    }
   }, []);
 
   const handleEdit = (list) => {
@@ -98,21 +93,6 @@ const MainPage = () => {
   const handleContextMenuDelete = (list) => {
     handleDeleteList(list);
     setContextMenu(null);
-  };
-
-  const renderListItem = (list) => {
-    const longPressEvent = useLongPress(
-      (event) => handleLongPress(event, list),
-      () => handleListClick(list),
-      { shouldPreventDefault: true, delay: 500 }
-    );
-
-    return (
-      <div className="list-item" {...longPressEvent}>
-        <span>{list.name}</span>
-        <span>{list.words.length} cards</span>
-      </div>
-    );
   };
 
   return (
@@ -135,7 +115,8 @@ const MainPage = () => {
       )}
       <List
         items={lists}
-        renderItem={renderListItem}
+        onItemClick={handleListClick}
+        onItemLongPress={handleLongPress}
       />
       {showRepeatSettings && (
         <RepeatSettingsModal

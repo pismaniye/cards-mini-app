@@ -1,15 +1,22 @@
 .list-page {
     padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
   }
   
-  .word-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .list-page h1 {
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .back-button {
+    margin-bottom: 20px;
   }
   
   .repeat-button {
     margin-bottom: 20px;
+    width: 100%;
+    max-width: 200px;
   }
   
   .fab {
@@ -28,8 +35,19 @@
     border: none;
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
   }
   
   .fab:hover {
     background-color: #006699;
+  }
+  
+  @media (max-width: 600px) {
+    .list-page {
+      padding: 10px;
+    }
+  
+    .repeat-button {
+      max-width: 100%;
+    }
   }

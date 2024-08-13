@@ -5,7 +5,6 @@ import Button from '../components/Button';
 import List from '../components/List';
 import RepeatSettingsModal from '../components/RepeatSettingsModal';
 import ContextMenu from '../components/ContextMenu';
-import useLongPress from '../utils/longpress';
 import '../styles/pages/ListPage.css';
 
 const ListPage = () => {
@@ -18,10 +17,12 @@ const ListPage = () => {
     navigate('/word/new');
   };
 
-  const handleWordClick = (word) => {
-    setCurrentWord(word);
-    navigate(`/word/${word.id}`);
-  };
+  const handleWordClick = useCallback((word) => {
+    if (word && word.id) {
+      setCurrentWord(word);
+      navigate(`/word/${word.id}`);
+    }
+  }, [navigate, setCurrentWord]);
 
   const handleStartRepeat = () => {
     if (currentList.words.length === 0) {
@@ -57,38 +58,12 @@ const ListPage = () => {
   };
 
   const handleLongPress = useCallback((event, word) => {
-    setContextMenu({
-      x: event.clientX || event.touches[0].clientX,
-      y: event.clientY || event.touches[0].clientY,
-      word
-    });
+    const x = event.clientX || (event.touches && event.touches[0].clientX);
+    const y = event.clientY || (event.touches && event.touches[0].clientY);
+    if (x !== undefined && y !== undefined) {
+      setContextMenu({ x, y, word });
+    }
   }, []);
-
-  const handleEdit = (word) => {
-    setCurrentWord(word);
-    navigate(`/word/${word.id}`);
-    setContextMenu(null);
-  };
-
-  const handleContextMenuDelete = (word) => {
-    handleDeleteWord(word);
-    setContextMenu(null);
-  };
-
-  const renderWordItem = (word) => {
-    const longPressEvent = useLongPress(
-      (event) => handleLongPress(event, word),
-      () => handleWordClick(word),
-      { shouldPreventDefault: true, delay: 500 }
-    );
-
-    return (
-      <div className="word-item" {...longPressEvent}>
-        <span>{word.front}</span>
-        <span>{word.back}</span>
-      </div>
-    );
-  };
 
   const handleBackToMain = () => {
     navigate('/');
@@ -107,7 +82,8 @@ const ListPage = () => {
       </Button>
       <List
         items={currentList.words}
-        renderItem={renderWordItem}
+        onItemClick={handleWordClick}
+        onItemLongPress={handleLongPress}
       />
       <Button onClick={handleAddWord} className="fab">
         +
@@ -122,8 +98,8 @@ const ListPage = () => {
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
-          onEdit={() => handleEdit(contextMenu.word)}
-          onDelete={() => handleContextMenuDelete(contextMenu.word)}
+          onEdit={() => handleWordClick(contextMenu.word)}
+          onDelete={() => handleDeleteWord(contextMenu.word)}
           onClose={() => setContextMenu(null)}
         />
       )}
