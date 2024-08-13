@@ -4,6 +4,8 @@ import { useAppContext } from '../context/AppContext';
 import Button from '../components/Button';
 import List from '../components/List';
 import RepeatSettingsModal from '../components/RepeatSettingsModal';
+import ContextMenu from '../components/ContextMenu';
+import useLongPress from '../utils/longpress';
 import '../styles/pages/MainPage.css';
 
 const MainPage = () => {
@@ -12,6 +14,7 @@ const MainPage = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [showRepeatSettings, setShowRepeatSettings] = useState(false);
+  const [contextMenu, setContextMenu] = useState(null);
 
   const handleAddList = () => {
     setIsAdding(true);
@@ -61,7 +64,7 @@ const MainPage = () => {
   }, [lists]);
 
   const handleRepeatAll = () => {
-    const allWords = getAllWords();
+    const allWords = lists.flatMap(list => list.words);
     if (allWords.length > 0) {
       setShowRepeatSettings(true);
     } else {
@@ -71,7 +74,7 @@ const MainPage = () => {
 
   const handleRepeatSettingsStart = (settings) => {
     setShowRepeatSettings(false);
-    const allWords = getAllWords();
+    const allWords = lists.flatMap(list => list.words);
     if (allWords.length > 0) {
       navigate('/repeat', { state: { settings, words: allWords } });
     } else {
@@ -79,13 +82,38 @@ const MainPage = () => {
     }
   };
 
-  const renderListItem = (list) => (
-    <div className="list-item">
-      <span>{list.name}</span>
-      <span>{list.words.length} cards</span>
-      <Button onClick={() => handleDeleteList(list)} className="delete-button">Delete</Button>
-    </div>
-  );
+  const handleLongPress = useCallback((event, list) => {
+    setContextMenu({
+      x: event.clientX || event.touches[0].clientX,
+      y: event.clientY || event.touches[0].clientY,
+      list
+    });
+  }, []);
+
+  const handleEdit = (list) => {
+    // Implement edit functionality
+    setContextMenu(null);
+  };
+
+  const handleContextMenuDelete = (list) => {
+    handleDeleteList(list);
+    setContextMenu(null);
+  };
+
+  const renderListItem = (list) => {
+    const longPressEvent = useLongPress(
+      (event) => handleLongPress(event, list),
+      () => handleListClick(list),
+      { shouldPreventDefault: true, delay: 500 }
+    );
+
+    return (
+      <div className="list-item" {...longPressEvent}>
+        <span>{list.name}</span>
+        <span>{list.words.length} cards</span>
+      </div>
+    );
+  };
 
   return (
     <div className="main-page">
@@ -108,12 +136,20 @@ const MainPage = () => {
       <List
         items={lists}
         renderItem={renderListItem}
-        onItemClick={handleListClick}
       />
       {showRepeatSettings && (
         <RepeatSettingsModal
           onStart={handleRepeatSettingsStart}
           onClose={() => setShowRepeatSettings(false)}
+        />
+      )}
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onEdit={() => handleEdit(contextMenu.list)}
+          onDelete={() => handleContextMenuDelete(contextMenu.list)}
+          onClose={() => setContextMenu(null)}
         />
       )}
     </div>
