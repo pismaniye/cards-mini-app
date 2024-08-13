@@ -9,7 +9,7 @@ import '../styles/pages/ListPage.css';
 
 const ListPage = () => {
   const navigate = useNavigate();
-  const { currentList, setCurrentWord, lists, setLists, saveData } = useAppContext();
+  const { currentList, setCurrentWord, setCurrentList } = useAppContext();
   const [showRepeatSettings, setShowRepeatSettings] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
 
@@ -44,16 +44,7 @@ const ListPage = () => {
         ...currentList,
         words: currentList.words.filter(w => w.id !== word.id)
       };
-      const updatedLists = lists.map(list =>
-        list.id === currentList.id ? updatedList : list
-      );
-      setLists(updatedLists);
-      try {
-        await saveData();
-        alert('Word deleted successfully!');
-      } catch (error) {
-        alert('Error deleting word: ' + error.message);
-      }
+      setCurrentList(updatedList);
     }
   };
 

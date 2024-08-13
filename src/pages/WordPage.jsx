@@ -7,7 +7,7 @@ import '../styles/pages/WordPage.css';
 const WordPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { currentList, setCurrentList, lists, setLists, saveData } = useAppContext();
+  const { currentList, setCurrentList } = useAppContext();
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
   const [example, setExample] = useState('');
@@ -28,7 +28,6 @@ const WordPage = () => {
       alert('Both front and back sides are required.');
       return;
     }
-
     const newWord = { id: id === 'new' ? Date.now().toString() : id, front, back, example };
     let updatedList;
     if (id === 'new') {
@@ -42,21 +41,9 @@ const WordPage = () => {
         words: currentList.words.map(w => w.id === id ? newWord : w)
       };
     }
-
-    const updatedLists = lists.map(list => 
-      list.id === currentList.id ? updatedList : list
-    );
-
-    setLists(updatedLists);
     setCurrentList(updatedList);
-
-    try {
-      await saveData();
-      alert(id === 'new' ? 'New word added successfully!' : 'Word updated successfully!');
-      navigate(-1);
-    } catch (error) {
-      alert('Error saving word: ' + error.message);
-    }
+    alert(id === 'new' ? 'New word added successfully!' : 'Word updated successfully!');
+    navigate(-1);
   };
 
   return (

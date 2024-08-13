@@ -9,8 +9,10 @@ import '../styles/pages/MainPage.css';
 
 const MainPage = () => {
   const navigate = useNavigate();
-  const { lists, setLists, setCurrentList, saveData } = useAppContext();
+  const { lists, setLists, setCurrentList } = useAppContext();
   const [isAdding, setIsAdding] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingList, setEditingList] = useState(null);
   const [newListName, setNewListName] = useState('');
   const [showRepeatSettings, setShowRepeatSettings] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
@@ -19,23 +21,16 @@ const MainPage = () => {
     setIsAdding(true);
   };
 
-  const handleSaveNewList = async () => {
+  const handleSaveNewList = () => {
     if (newListName.trim()) {
       const newList = {
         id: Date.now().toString(),
         name: newListName.trim(),
         words: []
       };
-      const updatedLists = [...lists, newList];
-      setLists(updatedLists);
+      setLists([...lists, newList]);
       setNewListName('');
       setIsAdding(false);
-      try {
-        await saveData();
-        alert('New list created successfully!');
-      } catch (error) {
-        alert('Error saving new list: ' + error.message);
-      }
     }
   };
 
@@ -44,17 +39,11 @@ const MainPage = () => {
     navigate(`/list/${list.id}`);
   }, [navigate, setCurrentList]);
 
-  const handleDeleteList = async (list) => {
+  const handleDeleteList = (list) => {
     const confirmed = window.confirm(`Are you sure you want to delete "${list.name}"?`);
     if (confirmed) {
       const updatedLists = lists.filter(l => l.id !== list.id);
       setLists(updatedLists);
-      try {
-        await saveData();
-        alert('List deleted successfully!');
-      } catch (error) {
-        alert('Error deleting list: ' + error.message);
-      }
     }
   };
 
@@ -86,8 +75,22 @@ const MainPage = () => {
   }, []);
 
   const handleEdit = (list) => {
-    // Implement edit functionality
+    setEditingList(list);
+    setNewListName(list.name);
+    setIsEditing(true);
     setContextMenu(null);
+  };
+
+  const handleSaveEdit = () => {
+    if (newListName.trim() && editingList) {
+      const updatedLists = lists.map(list => 
+        list.id === editingList.id ? { ...list, name: newListName.trim() } : list
+      );
+      setLists(updatedLists);
+      setIsEditing(false);
+      setEditingList(null);
+      setNewListName('');
+    }
   };
 
   const handleContextMenuDelete = (list) => {
@@ -99,16 +102,23 @@ const MainPage = () => {
     <div className="main-page">
       <h1>Lists</h1>
       <Button onClick={handleRepeatAll} className="repeat-all-button">Repeat All</Button>
-      {isAdding ? (
+      {isAdding || isEditing ? (
         <div className="add-list-form">
           <input
             type="text"
             value={newListName}
             onChange={(e) => setNewListName(e.target.value)}
-            placeholder="Enter list name"
+            placeholder={isEditing ? "Enter new list name" : "Enter list name"}
           />
-          <Button onClick={handleSaveNewList}>Save</Button>
-          <Button onClick={() => setIsAdding(false)}>Cancel</Button>
+          <Button onClick={isEditing ? handleSaveEdit : handleSaveNewList}>
+            {isEditing ? "Update" : "Save"}
+          </Button>
+          <Button onClick={() => {
+            setIsAdding(false);
+            setIsEditing(false);
+            setEditingList(null);
+            setNewListName('');
+          }}>Cancel</Button>
         </div>
       ) : (
         <Button onClick={handleAddList} className="fab">+</Button>

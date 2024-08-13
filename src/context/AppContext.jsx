@@ -1,13 +1,13 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import useFirebase from '../hooks/useFirebase';
 
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-    const [lists, setLists] = useState([]);
-    const [currentList, setCurrentList] = useState(null);
-    const [currentWord, setCurrentWord] = useState(null);
-    const firebase = useFirebase();
+  const [lists, setLists] = useState([]);
+  const [currentList, setCurrentList] = useState(null);
+  const [currentWord, setCurrentWord] = useState(null);
+  const firebase = useFirebase();
 
   useEffect(() => {
     if (!firebase.loading && firebase.user) {
@@ -23,24 +23,37 @@ export const AppProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Error loading data:", error);
-      // Здесь вы можете добавить обработку ошибок, например, показать уведомление пользователю
     }
   };
 
-  const saveData = async () => {
+  const saveData = useCallback(async () => {
     try {
       await firebase.saveData({ lists });
+      console.log('Data saved successfully');
     } catch (error) {
       console.error("Error saving data:", error);
-      // Здесь вы можете добавить обработку ошибок, например, показать уведомление пользователю
+      throw error;
     }
-  };
+  }, [firebase, lists]);
+
+  const updateLists = useCallback((newLists) => {
+    setLists(newLists);
+    saveData();
+  }, [saveData]);
+
+  const updateCurrentList = useCallback((updatedList) => {
+    setCurrentList(updatedList);
+    setLists(prevLists => prevLists.map(list => 
+      list.id === updatedList.id ? updatedList : list
+    ));
+    saveData();
+  }, [saveData]);
 
   const value = {
     lists,
-    setLists,
+    setLists: updateLists,
     currentList,
-    setCurrentList,
+    setCurrentList: updateCurrentList,
     currentWord,
     setCurrentWord,
     saveData,
