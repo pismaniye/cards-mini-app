@@ -7,5 +7,5 @@ export default defineConfig({
     react(),
     Inspect()
   ],
-  base: './',  // Добавьте эту строку
+  base: '/cards-mini-app/', // Замените 'cards-mini-app' на имя вашего репозитория
 })
