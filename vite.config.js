@@ -7,5 +7,5 @@ export default defineConfig({
     react(),
     Inspect()
   ],
-  // ... any other existing configuration options
+  base: './',  // Добавьте эту строку
 })
