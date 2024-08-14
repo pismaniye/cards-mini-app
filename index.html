@@ -11,49 +11,39 @@
   <body>
     <div id="root"></div>
     <script>
-      (function() {
-        try {
-          if (window.location.hash) {
-            var hash = window.location.hash.substring(1);
-            var params = {};
-            hash.split('&').forEach(function(part) {
-              var item = part.split('=');
-              params[item[0]] = decodeURIComponent(item[1]);
-            });
-    
-            console.log('Parsed URL parameters:', params);
-    
-            if (params.tgWebAppData) {
-              var webAppData = params.tgWebAppData;
-    
-              // Если данные начинаются с "!_", удаляем их
-              if (webAppData.startsWith('!_')) {
-                webAppData = webAppData.substring(2);
-              }
-    
-              // Пробуем разобрать webAppData как JSON, только если это возможно
-              try {
-                if (webAppData[0] === '{' || webAppData[0] === '[') {
-                  webAppData = JSON.parse(webAppData);
-                }
-              } catch (e) {
-                console.warn('Failed to parse webAppData as JSON, using as-is:', e);
-              }
-    
-              console.log('Final webAppData:', webAppData);
-    
-              window.Telegram = {
-                WebApp: {
-                  initDataUnsafe: webAppData,
-                  initData: params.tgWebAppData
-                }
-              };
-            }
+  (function() {
+    try {
+      if (window.location.hash) {
+        var hash = window.location.hash.substring(1);
+        var params = {};
+        hash.split('&').forEach(function(part) {
+          var item = part.split('=');
+          params[item[0]] = decodeURIComponent(item[1]);
+        });
+
+        console.log('Parsed URL parameters:', params);
+
+        if (params.user) {
+          try {
+            // Декодируем JSON из параметра user
+            var userData = JSON.parse(params.user);
+            console.log('Parsed user data:', userData);
+          } catch (e) {
+            console.warn('Failed to parse user data as JSON:', e);
           }
-        } catch(e) {
-          console.error('Failed to process Telegram Web App data:', e);
         }
-      })();
-    </script>
+
+        window.Telegram = {
+          WebApp: {
+            initDataUnsafe: params,
+            initData: window.location.hash.substring(1)
+          }
+        };
+      }
+    } catch(e) {
+      console.error('Failed to process Telegram Web App data:', e);
+    }
+  })();
+</script>
   </body>
 </html>
