@@ -4,10 +4,28 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/cards-mini-app/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />    <title>Cards</title>
-    <script type="module" crossorigin src="/cards-mini-app/assets/index-DzxSMYm5.js"></script>
+    <script type="module" crossorigin src="/cards-mini-app/assets/index-CZqYuNTY.js"></script>
     <link rel="stylesheet" crossorigin href="/cards-mini-app/assets/index-D27_D2vz.css">
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // This script handles potential JSON parsing issues
+      (function() {
+        var jsonStr = decodeURIComponent(location.hash.slice(1));
+        if (jsonStr.charAt(0) !== '{') return;
+        try {
+          var initData = JSON.parse(jsonStr);
+          window.Telegram = {
+            WebApp: {
+              initDataUnsafe: initData,
+              initData: jsonStr
+            }
+          };
+        } catch(e) {
+          console.error('Failed to parse init data:', e);
+        }
+      })();
+    </script>
   </body>
 </html>
