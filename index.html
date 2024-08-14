@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/cards-mini-app/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>CARDS</title>
+  <title>Cards</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script type="module" crossorigin src="/cards-mini-app/assets/index-BL1rQ3fc.js"></script>
   <link rel="stylesheet" crossorigin href="/cards-mini-app/assets/index-D27_D2vz.css">
@@ -29,22 +29,20 @@
           }
           console.log('Processed initData:', initData);
           
-          try {
-            var decodedData = decodeURIComponent(initData);
-            console.log('Decoded initData:', decodedData);
-            
-            var parsedData = JSON.parse(decodedData);
-            console.log('Parsed initData:', parsedData);
-            
-            if (window.Telegram && window.Telegram.WebApp) {
-              window.Telegram.WebApp.initDataUnsafe = parsedData;
-              window.Telegram.WebApp.initData = initData;
-              console.log('Telegram WebApp initialized with data');
-            } else {
-              console.warn('window.Telegram.WebApp is not available');
-            }
-          } catch (e) {
-            console.error('Error processing initData:', e);
+          // Parse the initData as a query string instead of JSON
+          var parsedData = {};
+          initData.split('&').forEach(function(pair) {
+            var [key, value] = pair.split('=');
+            parsedData[decodeURIComponent(key)] = decodeURIComponent(value);
+          });
+          console.log('Parsed initData:', parsedData);
+          
+          if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.initDataUnsafe = parsedData;
+            window.Telegram.WebApp.initData = initData;
+            console.log('Telegram WebApp initialized with data');
+          } else {
+            console.warn('window.Telegram.WebApp is not available');
           }
         } else {
           console.log('No tgWebAppData found in URL parameters');
