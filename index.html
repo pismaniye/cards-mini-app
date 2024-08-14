@@ -20,18 +20,32 @@
               var item = part.split('=');
               params[item[0]] = decodeURIComponent(item[1]);
             });
-            
+    
+            // Логируем данные до их обработки
+            console.log('Parsed URL parameters:', params);
+    
             if (params.tgWebAppData) {
               var webAppData = params.tgWebAppData;
+    
+              // Логируем исходные данные
+              console.log('Original tgWebAppData:', webAppData);
+    
               if (webAppData.startsWith('!_')) {
                 webAppData = webAppData.substring(2);
               }
+    
+              // Логируем данные после удаления префикса
+              console.log('Processed tgWebAppData:', webAppData);
+    
               try {
                 webAppData = JSON.parse(webAppData);
               } catch (e) {
                 console.warn('Failed to parse webAppData as JSON, using as-is');
               }
-              
+    
+              // Логируем итоговые данные
+              console.log('Final webAppData:', webAppData);
+    
               window.Telegram = {
                 WebApp: {
                   initDataUnsafe: webAppData,
