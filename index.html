@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/cards-mini-app/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Cards</title>
+  <title>CARDS</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script type="module" crossorigin src="/cards-mini-app/assets/index-BL1rQ3fc.js"></script>
+  <script type="module" crossorigin src="/cards-mini-app/assets/index-DZtKTWUr.js"></script>
   <link rel="stylesheet" crossorigin href="/cards-mini-app/assets/index-D27_D2vz.css">
 </head>
 <body>
@@ -24,17 +24,24 @@
         
         if (initData) {
           if (initData.startsWith('!_')) {
-            console.log('initData starts with !_, removing prefix');
-            initData = initData.substring(2);
+            console.log('initData starts with !_, special handling');
+            // Создаем объект с исходными данными
+            var parsedData = { _rawData: initData.substring(2) };
+            // Пытаемся разобрать содержимое как JSON, если это возможно
+            try {
+              var jsonContent = JSON.parse(initData.substring(2));
+              Object.assign(parsedData, jsonContent);
+            } catch (jsonError) {
+              console.warn('Failed to parse content as JSON:', jsonError);
+            }
+          } else {
+            // Обычная обработка query string
+            var parsedData = {};
+            initData.split('&').forEach(function(pair) {
+              var [key, value] = pair.split('=');
+              parsedData[decodeURIComponent(key)] = decodeURIComponent(value);
+            });
           }
-          console.log('Processed initData:', initData);
-          
-          // Parse the initData as a query string instead of JSON
-          var parsedData = {};
-          initData.split('&').forEach(function(pair) {
-            var [key, value] = pair.split('=');
-            parsedData[decodeURIComponent(key)] = decodeURIComponent(value);
-          });
           console.log('Parsed initData:', parsedData);
           
           if (window.Telegram && window.Telegram.WebApp) {
