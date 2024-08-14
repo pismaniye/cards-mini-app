@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/cards-mini-app/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />    
-    <title>CARDS</title>
-    <script type="module" crossorigin src="/cards-mini-app/assets/index-CFcPdb-S.js"></script>
+    <title>Cards</title>
+    <script type="module" crossorigin src="/cards-mini-app/assets/index-DkizeaJ6.js"></script>
     <link rel="stylesheet" crossorigin href="/cards-mini-app/assets/index-D27_D2vz.css">
   </head>
   <body>
@@ -13,18 +13,35 @@
     <script>
       (function() {
         try {
-          if (window.location.hash && window.location.hash.startsWith('#tgWebAppData=')) {
-            var data = window.location.hash.substr(14);
-            data = JSON.parse(decodeURIComponent(data));
-            window.Telegram = {
-              WebApp: {
-                initDataUnsafe: data,
-                initData: window.location.hash.substr(1)
+          if (window.location.hash) {
+            var hash = window.location.hash.substring(1);
+            var params = {};
+            hash.split('&').forEach(function(part) {
+              var item = part.split('=');
+              params[item[0]] = decodeURIComponent(item[1]);
+            });
+            
+            if (params.tgWebAppData) {
+              var webAppData = params.tgWebAppData;
+              if (webAppData.startsWith('!_')) {
+                webAppData = webAppData.substring(2);
               }
-            };
+              try {
+                webAppData = JSON.parse(webAppData);
+              } catch (e) {
+                console.warn('Failed to parse webAppData as JSON, using as-is');
+              }
+              
+              window.Telegram = {
+                WebApp: {
+                  initDataUnsafe: webAppData,
+                  initData: params.tgWebAppData
+                }
+              };
+            }
           }
         } catch(e) {
-          console.error('Failed to parse Telegram Web App data:', e);
+          console.error('Failed to process Telegram Web App data:', e);
         }
       })();
     </script>
