@@ -31,16 +31,15 @@
                 webAppData = webAppData.substring(2);
               }
     
+              // Пробуем разобрать webAppData как JSON, только если это возможно
               try {
-                // Пробуем разобрать webAppData как JSON, только если это возможно
                 if (webAppData[0] === '{' || webAppData[0] === '[') {
                   webAppData = JSON.parse(webAppData);
                 }
               } catch (e) {
-                console.warn('Failed to parse webAppData as JSON, using as-is');
+                console.warn('Failed to parse webAppData as JSON, using as-is:', e);
               }
     
-              // Логируем итоговые данные
               console.log('Final webAppData:', webAppData);
     
               window.Telegram = {
