@@ -23,22 +23,33 @@
     
             console.log('Parsed URL parameters:', params);
     
-            if (params.user) {
-              try {
-                // Декодируем JSON из параметра user
-                var userData = JSON.parse(params.user);
-                console.log('Parsed user data:', userData);
-              } catch (e) {
-                console.warn('Failed to parse user data as JSON:', e);
-              }
-            }
+            if (params.tgWebAppData) {
+              var webAppData = params.tgWebAppData;
     
-            window.Telegram = {
-              WebApp: {
-                initDataUnsafe: params,
-                initData: window.location.hash.substring(1)
+              // Если данные начинаются с "!_", удаляем их
+              if (webAppData.startsWith('!_')) {
+                webAppData = webAppData.substring(2);
               }
-            };
+    
+              try {
+                // Пробуем разобрать webAppData как JSON, только если это возможно
+                if (webAppData[0] === '{' || webAppData[0] === '[') {
+                  webAppData = JSON.parse(webAppData);
+                }
+              } catch (e) {
+                console.warn('Failed to parse webAppData as JSON, using as-is');
+              }
+    
+              // Логируем итоговые данные
+              console.log('Final webAppData:', webAppData);
+    
+              window.Telegram = {
+                WebApp: {
+                  initDataUnsafe: webAppData,
+                  initData: params.tgWebAppData
+                }
+              };
+            }
           }
         } catch(e) {
           console.error('Failed to process Telegram Web App data:', e);
