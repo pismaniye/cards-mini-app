@@ -1,40 +1,14 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="./vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Cards</title>
-  <script type="module" crossorigin src="./assets/index-Cv7IlgJH.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-D27_D2vz.css">
-</head>
-<body>
-  <script>
-    window.onerror = function(message, source, lineno, colno, error) {
-      console.error('Глобальная ошибка:', message);
-      console.error('Источник:', source);
-      console.error('Строка:', lineno);
-      console.error('Колонка:', colno);
-      console.error('Стек вызовов:', error && error.stack);
-      return false;
-    };
-
-    var originalJSONParse = JSON.parse;
-    JSON.parse = function(data) {
-      try {
-        return originalJSONParse.apply(this, arguments);
-      } catch (error) {
-        console.error('Ошибка при парсинге JSON:', error);
-        console.error('Данные для парсинга:', data);
-        console.error('Стек вызовов:', error.stack);
-        return null;
-      }
-    };
-  </script>
-  <div id="root"></div>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script>
-    window.Telegram.WebApp.ready();
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/cards-mini-app/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React</title>
+    <script type="module" crossorigin src="/cards-mini-app/assets/index-OqXhB9Df.js"></script>
+    <link rel="stylesheet" crossorigin href="/cards-mini-app/assets/index-D27_D2vz.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
